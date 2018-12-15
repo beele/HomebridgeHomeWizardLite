@@ -143,7 +143,6 @@ HomebridgeHomeWizardLite.prototype = {
 
         const switchService = new Service.Switch(me.name);
         switchService.getCharacteristic(Characteristic.On)
-            .on('get', this.getPowerState.bind(this))
             .on('set', this.setPowerState.bind(this));
 
         this.informationService = informationService;
