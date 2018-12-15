@@ -16,7 +16,7 @@ let Service, Characteristic;
 module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
-    homebridge.registerAccessory('homebridge-homewizardlite', 'HomebridgeHomeWizardLite', HomebridgeHomeWizardLite);
+    homebridge.registerAccessory('@beele/homebridge-homewizard-lite', 'HomebridgeHomeWizardLite', HomebridgeHomeWizardLite);
 };
 
 function HomebridgeHomeWizardLite(log, config) {
