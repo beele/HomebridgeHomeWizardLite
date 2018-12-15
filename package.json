@@ -1,5 +1,5 @@
 {
-  "name": "homebridge-homewizardlite",
+  "name": "@beele/homebridge-homewizard-lite",
   "version": "1.0.0",
   "description": "HomeWizard manual control for domotics integrations with HomeBridge",
   "main": "src/index.js",
