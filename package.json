@@ -1,0 +1,25 @@
+{
+  "name": "homebridge-homewizardlite",
+  "version": "1.0.0",
+  "description": "HomeWizard manual control for domotics integrations with HomeBridge",
+  "main": "index.js",
+  "dependencies": {
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+  },
+  "keywords": [
+    "domotics",
+    "homewizard",
+    "IoT",
+    "internet",
+    "of",
+    "things",
+    "smart",
+    "tech"
+  ],
+  "author": "Kevin Van den Abeele",
+  "license": "ISC"
+}
