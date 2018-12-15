@@ -1,18 +1,31 @@
 {
   "name": "homebridge-homewizard-flamingo",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "HomeWizard lite (flamingo) manual control for domotics integrations with HomeBridge",
   "main": "src/index.js",
   "dependencies": {
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
   },
-  "devDependencies": {},
+  "devDependencies": {
+
+  },
   "scripts": {
   },
   "keywords": [
     "homebridge-plugin"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/beele/HomebridgeHomeWizardLite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/beele/HomebridgeHomeWizardLite/issues"
+  },
+  "engines": {
+    "node": ">=9.8.0",
+    "homebridge": ">=0.4.45"
+  },
   "author": "Kevin Van den Abeele",
   "license": "ISC"
 }
