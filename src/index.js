@@ -6,6 +6,8 @@ let Service, Characteristic;
 // "accessories": [
 //   {
 //     "accessory": "HomebridgeHomeWizardLite",
+//     "name": "display-name",
+//     "room": "room-name";
 //     "username": "user@domain.tld",
 //     "password": "password",
 //     "hub": "test-hub-name",
@@ -72,7 +74,7 @@ HomebridgeHomeWizardLite.prototype = {
                     return Promise.resolve();
                 });
         } else {
-            return new Promise.resolve();
+            return Promise.resolve();
         }
     },
 
