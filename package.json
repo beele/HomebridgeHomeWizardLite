@@ -11,6 +11,7 @@
   "scripts": {
   },
   "keywords": [
+    "homebridge-plugin",
     "domotics",
     "homewizard",
     "IoT",
