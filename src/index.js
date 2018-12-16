@@ -55,12 +55,12 @@ HomebridgeHomeWizardLite.prototype = {
                 return me.setSwitchState(powerOn);
             })
             .then(() => {
-                this.log('SUCCESS: ' + me.switch + ' has been turned ' + powerOn ? 'ON' : 'OFF');
+                this.log('SUCCESS: ' + me.switch + ' has been turned ' + (powerOn ? 'ON' : 'OFF'));
                 me.isOn = powerOn;
                 return next();
             })
             .catch((error) => {
-                this.log('ERROR: ' + me.switch + ' could not be turned ' + powerOn ? 'ON' : 'OFF');
+                this.log('ERROR: ' + me.switch + ' could not be turned ' + (powerOn ? 'ON' : 'OFF'));
                 return next({error: 'Could not set switch state', details: error});
             });
     },
@@ -80,6 +80,7 @@ HomebridgeHomeWizardLite.prototype = {
 
             return request.get(opts)
                 .then((response) => {
+                    me.log('Authenticated, session set');
                     me.sessionId = response.session;
                     me.sessionTimestamp = Date.now();
                     return Promise.resolve();
@@ -123,10 +124,12 @@ HomebridgeHomeWizardLite.prototype = {
                 .then((response) => {
                     response.some((hub) => {
                         if(hub.name === hubName) {
+                            me.log('Hub ' + hubName + ' found, id: ' + hub.id);
                             me.hubId = hub.id;
 
                             hub.devices.some((device) => {
                                 if (device.name === switchName) {
+                                    me.log('Switch ' + switchName + ' found, id:' + device.id);
                                     me.switchId = device.id;
                                     return true;
                                 }
