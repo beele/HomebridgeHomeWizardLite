@@ -101,8 +101,8 @@ HomebridgeHomeWizardLite.prototype = {
     isSessionStillValid: function (sessionTimestamp) {
         const me = this;
 
-        //TODO: Find out validity duration, for now set at 2 hours!
-        if (sessionTimestamp <= Date.now() && sessionTimestamp < (sessionTimestamp + 2 * 3600 * 1000)) {
+        //TODO: Find out validity duration, for now set at 1 hour and a half!
+        if ((sessionTimestamp + (3600 * 1000 * 1.5)) < Date.now()) {
             return true;
         }
         me.log('WARNING: Authentication expired, a new session must be created!');

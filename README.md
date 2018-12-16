@@ -25,3 +25,8 @@ A future version of this plugin will change this so all switches under the given
 
 Because these switches do not report their current on/off state it is important that they are in the off state when you start to use them with the HomeKit app.
 All of/off state is kept in the Homebridge plugin.
+
+Tested with:
+
+- Flamingo SF-501SHCFR - Smart switch
+- Flamingo SF-501FR - Switch set with remote control
