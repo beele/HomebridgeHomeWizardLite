@@ -1,6 +1,6 @@
 {
   "name": "homebridge-homewizard-flamingo",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "HomeWizard lite (flamingo) manual control for domotics integrations with HomeBridge",
   "main": "src/index.js",
   "dependencies": {
@@ -8,7 +8,6 @@
     "request-promise-native": "^1.0.5"
   },
   "devDependencies": {
-
   },
   "scripts": {
   },
@@ -27,5 +26,5 @@
     "homebridge": ">=0.4.45"
   },
   "author": "Kevin Van den Abeele",
-  "license": "ISC"
+  "license": "GNU GPLv3"
 }

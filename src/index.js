@@ -31,11 +31,19 @@ function HomebridgeHomeWizardLite(log, config) {
     this.switch = config['switch'];
 
     this.sessionId = null;
+    this.sessionTimestamp = null;
+
     this.hubId = null;
     this.switchId = null;
+
+    this.isOn = false;
 }
 
 HomebridgeHomeWizardLite.prototype = {
+    getPowerState: function (next) {
+        return next(null, this.isOn);
+    },
+
     setPowerState: function (powerOn, next) {
         const me = this;
 
@@ -47,9 +55,12 @@ HomebridgeHomeWizardLite.prototype = {
                 return me.setSwitchState(powerOn);
             })
             .then(() => {
+                this.log('SUCCESS: ' + me.switch + ' has been turned ' + powerOn ? 'ON' : 'OFF');
+                me.isOn = powerOn;
                 return next();
             })
             .catch((error) => {
+                this.log('ERROR: ' + me.switch + ' could not be turned ' + powerOn ? 'ON' : 'OFF');
                 return next({error: 'Could not set switch state', details: error});
             });
     },
@@ -57,7 +68,7 @@ HomebridgeHomeWizardLite.prototype = {
     authenticate: function (username, password) {
         const me = this;
 
-        if (me.sessionId === null) {
+        if (me.sessionId === null && me.isSessionStillValid(me.sessionTimestamp)) {
             const credentials = this.getBasicAuthHeader(username, password);
             const opts = {
                 uri: 'https://cloud.homewizard.com/account/login',
@@ -70,10 +81,11 @@ HomebridgeHomeWizardLite.prototype = {
             return request.get(opts)
                 .then((response) => {
                     me.sessionId = response.session;
-                    console.log(me.sessionId);
+                    me.sessionTimestamp = Date.now();
                     return Promise.resolve();
                 });
         } else {
+            me.log('Preauthenticated, skipping new authentication');
             return Promise.resolve();
         }
     },
@@ -83,6 +95,17 @@ HomebridgeHomeWizardLite.prototype = {
         passHash.update(password);
 
         return 'Basic ' + Buffer.from(username + ':' + passHash.digest('hex')).toString('base64');
+    },
+
+    isSessionStillValid: function (sessionTimestamp) {
+        const me = this;
+
+        //TODO: Find out validity duration, for now set at 2 hours!
+        if (sessionTimestamp <= Date.now() && sessionTimestamp < (sessionTimestamp + 2 * 3600 * 1000)) {
+            return true;
+        }
+        me.log('WARNING: Authentication expired, a new session must be created!');
+        return false;
     },
 
     getSwitchIdByHubAndSwitchNames: function (hubName, switchName) {
@@ -114,6 +137,7 @@ HomebridgeHomeWizardLite.prototype = {
                     return Promise.resolve();
                 });
         } else {
+            me.log('Hub and switch IDs already known, skipping lookup');
             return Promise.resolve();
         }
     },
@@ -145,6 +169,7 @@ HomebridgeHomeWizardLite.prototype = {
 
         const switchService = new Service.Switch(me.name);
         switchService.getCharacteristic(Characteristic.On)
+            .on('get', this.getPowerState.bind(this))
             .on('set', this.setPowerState.bind(this));
 
         this.informationService = informationService;
