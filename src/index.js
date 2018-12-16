@@ -55,11 +55,15 @@ HomebridgeHomeWizardLite.prototype = {
                 return me.setSwitchState(powerOn);
             })
             .then(() => {
-                this.log('SUCCESS: ' + me.switch + ' has been turned ' + (powerOn ? 'ON' : 'OFF'));
                 me.isOn = powerOn;
+
+                this.log('SUCCESS: ' + me.switch + ' has been turned ' + (powerOn ? 'ON' : 'OFF'));
                 return next();
             })
             .catch((error) => {
+                this.sessionId = null;
+                this.sessionTimestamp = null;
+
                 this.log('ERROR: ' + me.switch + ' could not be turned ' + (powerOn ? 'ON' : 'OFF'));
                 return next({error: 'Could not set switch state', details: error});
             });
@@ -68,7 +72,7 @@ HomebridgeHomeWizardLite.prototype = {
     authenticate: function (username, password) {
         const me = this;
 
-        if (me.sessionId === null && me.isSessionStillValid(me.sessionTimestamp)) {
+        if (me.sessionId === null || !me.isSessionStillValid(me.sessionTimestamp)) {
             const credentials = this.getBasicAuthHeader(username, password);
             const opts = {
                 uri: 'https://cloud.homewizard.com/account/login',
@@ -101,8 +105,8 @@ HomebridgeHomeWizardLite.prototype = {
     isSessionStillValid: function (sessionTimestamp) {
         const me = this;
 
-        //TODO: Find out validity duration, for now set at 1 hour and a half!
-        if ((sessionTimestamp + (3600 * 1000 * 1.5)) < Date.now()) {
+        //TODO: Find out validity duration, for now set at 1 hour and 20 minutes!
+        if ((sessionTimestamp + ((3600 + 1200) * 1000)) < Date.now()) {
             return true;
         }
         me.log('WARNING: Authentication expired, a new session must be created!');
