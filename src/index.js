@@ -64,7 +64,7 @@ HomebridgeHomeWizardLite.prototype = {
                 this.sessionId = null;
                 this.sessionTimestamp = null;
 
-                this.log('ERROR: ' + me.switch + ' could not be turned ' + (powerOn ? 'ON' : 'OFF'));
+                this.log('ERROR: ' + me.switch + ' could not be turned ' + (powerOn ? 'ON' : 'OFF') + ' details: ' + error);
                 return next({error: 'Could not set switch state', details: error});
             });
     },
@@ -105,8 +105,9 @@ HomebridgeHomeWizardLite.prototype = {
     isSessionStillValid: function (sessionTimestamp) {
         const me = this;
 
-        //TODO: Find out validity duration, for now set at 1 hour and 20 minutes!
-        if ((sessionTimestamp + ((3600 + 1200) * 1000)) < Date.now()) {
+        //Validity duration is somewhere between 1 and 1,5 hours, for now set at 1 hour!
+        console.log(sessionTimestamp + (3600 * 1000) + ' vs ' + Date.now());
+        if ((sessionTimestamp + (3600 * 1000)) < Date.now()) {
             return true;
         }
         me.log('WARNING: Authentication expired, a new session must be created!');
