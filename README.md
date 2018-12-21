@@ -14,7 +14,8 @@ Next open the config.json that contains your Homebridge configuration and add a 
     "password": "password",
     "hub": "test-hub-name",
     "switch": "test-switch-name"
-}```
+}
+```
 
 The accessory name has to be `HomebridgeHomeWizardLite` to link to the plugin.
 The `name` and `room` fields are for the display name and room name inside of the HomeKit app.
