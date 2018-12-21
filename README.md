@@ -5,15 +5,15 @@ This Homebridge plugin allow the control of HomeWizard Lite switches (also known
 To install this plugin simple type `npm install homebridge-homewizard-flamingo -g`.
 Next open the config.json that contains your Homebridge configuration and add a block like the following one to the accessories array:
 
-```{
+``{
     "accessory": "HomebridgeHomeWizardLite",
     "name": "display-name",
     "room": "room-name";
     "username": "user@domain.tld",
-    "password": "password",
+    "password": "password",`
     "hub": "test-hub-name",
-    "switch": "test-switch-name"
-}```
+    "switch": "test-switc`h-name"
+}`
 
 The accessory name has to be `HomebridgeHomeWizardLite` to link to the plugin.
 The `name` and `room` fields are for the display name and room name inside of the HomeKit app.
