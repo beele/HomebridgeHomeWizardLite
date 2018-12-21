@@ -106,8 +106,7 @@ HomebridgeHomeWizardLite.prototype = {
         const me = this;
 
         //Validity duration is somewhere between 1 and 1,5 hours, for now set at 1 hour!
-        console.log(sessionTimestamp + (3600 * 1000) + ' vs ' + Date.now());
-        if ((sessionTimestamp + (3600 * 1000)) < Date.now()) {
+        if ((sessionTimestamp + (3600 * 1000)) >= Date.now()) {
             return true;
         }
         me.log('WARNING: Authentication expired, a new session must be created!');
