@@ -29,6 +29,6 @@ All of/off state is kept in the Homebridge plugin.
 Tested with:
 
 - Flamingo SF-501SHCFR - Smart switch
-  [[https://raw.githubusercontent.com/beele/HomebridgeHomeWizardLite/blob/master/resources/img/smart-switch.jpg|alt=Smart switch]]
+  <br/>![Smart switch](resources/img/smart-switch.jpg?raw=true "Smart switch")
 - Flamingo SF-501FR - Switch set with remote control
-  [[https://raw.githubusercontent.com/beele/HomebridgeHomeWizardLite/blob/master/resources/img/switch-set.jpg|alt=Switch set]]
+  <br/>![Switch set](resources/img/switch-set.jpg?raw=true "Switch set")
