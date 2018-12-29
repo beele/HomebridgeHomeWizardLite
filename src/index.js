@@ -7,7 +7,7 @@ let Service, Characteristic;
 //   {
 //     "accessory": "HomebridgeHomeWizardLite",
 //     "name": "display-name",
-//     "room": "room-name";
+//     "room": "room-name",
 //     "username": "user@domain.tld",
 //     "password": "password",
 //     "hub": "test-hub-name",
