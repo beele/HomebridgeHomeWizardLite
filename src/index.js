@@ -1,8 +1,6 @@
 const request = require('request-promise-native');
 const crypto = require('crypto');
 
-let Service, Characteristic;
-
 // "platforms": [
 //   {
 //     "platform": "HomebridgeHomeWizardLite",
@@ -27,7 +25,7 @@ module.exports = function (homebridge) {
 };
 
 function HomeWizardPlatform(log, config, api) {
-    log("SamplePlatform Init");
+    log('HomeWizard-Lite Platform Init');
     const platform = this;
 
     this.log = log;
@@ -44,92 +42,117 @@ function HomeWizardPlatform(log, config, api) {
     this.switches = [];
 
     if (api) {
-        this.api = api;
+        platform.api = api;
 
-        this.api.on('didFinishLaunching', function () {
-            platform.log("DidFinishLaunching");
+        platform.api.on('didFinishLaunching', function () {
+            platform.log('Platform API loaded!');
 
-            platform.authenticate(platform.username, platform.password)
-                .then(() => {
-                    return platform.getHubAndSwitchIdsByHubName(platform.hub);
-                })
-                .then(() => {
+            if (platform.accessories.length > 0) {
+                platform.log('Accessories restored from cache!');
 
-                    this.switches.forEach(sw => {
-                        platform.createAccessory(sw.name, sw.id);
+                platform.authenticate(platform.username, platform.password)
+                    .then(() => {
+                        //Token stored, ready to be used later!
+                    }).catch((error) => {
+                        platform.log('Authentication failed: ' + JSON.stringify(error, null, 4));
                     });
+            } else {
+                platform.authenticate(platform.username, platform.password)
+                    .then(() => {
+                        platform.log('Getting devices and registering accessories');
+                        return platform.getHubAndSwitchIdsByHubName(platform.hub);
+                    })
+                    .then(() => {
+                        platform.switches.forEach(sw => {
+                            platform.log('Creating accessory: ' + sw.name + ' :' + sw.id);
+                            platform.addAccessory(platform.switches.indexOf(sw));
+                        });
+                        platform.log('Accessories created!');
+                    })
+                    .catch((error) => {
+                        platform.sessionId = null;
+                        platform.sessionTimestamp = null;
 
-                    this.log('Accessories created!');
-                })
-                .catch((error) => {
-                    this.sessionId = null;
-                    this.sessionTimestamp = null;
-
-                    this.log('ERROR: hub and switch ids could not be fetched, and the corresponding accessories could not be created! details: ' + error);
-                });
+                        platform.log('ERROR: hub and switch ids could not be fetched, and the corresponding accessories could not be created! details: ' + error);
+                    });
+            }
         }.bind(this));
     }
 }
 
 HomeWizardPlatform.prototype = {
-    configureAccessory: function (accessory) {
-        platform.log('Function configureAccessory is not implemented!');
-    },
-    addAccessory: function (accessoryName) {
-        platform.log('Function configureAccessory is not implemented!');
-    },
-    updateAccessoriesReachability: function () {
-        for (const index in this.accessories) {
-            const accessory = this.accessories[index];
-            accessory.updateReachability(false);
-        }
-    },
-    removeAccessory: function () {
-        this.api.unregisterPlatformAccessories("homebridge-homewizard-lite", "HomeWizard-Lite", this.accessories);
-        this.accessories = [];
-    },
-
-    createAccessory: function (accessoryName, switchId) {
+    addAccessory: function (index) {
         const platform = this;
-        const uuid = UUIDGen.generate(accessoryName);
-        const newAccessory = new Accessory(accessoryName, uuid);
 
-        newAccessory.context.switchId = switchId;
-        newAccessory.on('identify', function (paired, callback) {
-            platform.log(newAccessory.displayName, "Identify!!!");
-            callback();
-        });
+        const sw = platform.switches[index];
+        const uuid = UUIDGen.generate(sw.name);
+        const newAccessory = new Accessory(sw.name, uuid);
 
-        newAccessory.addService(Service.Switch, accessoryName)
+        newAccessory.context = {id: sw.id};
+        newAccessory.addService(Service.Switch, sw.name);
+
+        platform.api.registerPlatformAccessories('homebridge-homewizard-lite', 'HomeWizard-Lite', [newAccessory]);
+        platform.configureAccessory(newAccessory);
+    },
+    configureAccessory: function (accessory) {
+        const platform = this;
+        platform.accessories.push(accessory);
+
+        const id = accessory.context.id;
+        platform.log('Configuring ' + id);
+
+        accessory.getService(Service.AccessoryInformation)
+            .setCharacteristic(Characteristic.Manufacturer, 'HomeWizard')
+            .setCharacteristic(Characteristic.Model, 'SmartSwitch')
+            .setCharacteristic(Characteristic.SerialNumber, id);
+
+        accessory.getService(Service.Switch)
             .getCharacteristic(Characteristic.On)
-            .on('set', function (value, next) {
+            .on('get', (callback) => {
+                callback(accessory.context.isOn);
+            })
+            .on('set', (value, callback) => {
                 platform.authenticate(platform.username, platform.password)
                     .then(() => {
-                        return platform.setSwitchState(newAccessory.switchId, value);
+                        return platform.setSwitchState(id, value);
                     })
                     .then(() => {
-                        platform.isOn = value;
+                        accessory.context.isOn = value;
 
-                        this.log('SUCCESS: ' + newAccessory.displayName + ' has been turned ' + (value ? 'ON' : 'OFF'));
-                        return next();
+                        platform.log('SUCCESS: ' + accessory.displayName + ' has been turned ' + (value ? 'ON' : 'OFF'));
+                        return callback();
                     })
                     .catch((error) => {
-                        this.sessionId = null;
-                        this.sessionTimestamp = null;
+                        platform.sessionId = null;
+                        platform.sessionTimestamp = null;
 
-                        this.log('ERROR: ' + newAccessory.displayName + ' could not be turned ' + (value ? 'ON' : 'OFF') + ' details: ' + error);
-                        return next({error: 'Could not set switch state', details: error});
+                        platform.log('ERROR: ' + accessory.displayName + ' could not be turned ' + (value ? 'ON' : 'OFF') + ' details: ' + error);
+                        return callback({error: 'Could not set switch state', details: error});
                     });
             });
+    },
+    removeAccessory: function (name) {
+        const platform = this;
+        platform.log('Delete requested for: ' + name);
 
-        this.api.registerPlatformAccessories('homebridge-homewizard-lite', 'HomeWizard-Lite', [newAccessory]);
+        let switchToRemove;
+        platform.accessories.forEach(value => {
+            if (value.displayName === name) {
+                switchToRemove = value;
+            }
+        });
+
+        if (switchToRemove) {
+            platform.api.unregisterPlatformAccessories('homebridge-homewizard-lite', 'HomeWizard-Lite', [switchToRemove]);
+            platform.accessories.splice(platform.accessories.indexOf(switchToRemove), 1);
+        }
     },
 
     authenticate: function (username, password) {
         const platform = this;
 
         if (platform.sessionId === null || !platform.isSessionStillValid(platform.sessionTimestamp)) {
-            const credentials = this.getBasicAuthHeader(username, password);
+            const credentials = platform.getBasicAuthHeader(username, password);
             const opts = {
                 uri: 'https://cloud.homewizard.com/account/login',
                 headers: {
@@ -150,14 +173,12 @@ HomeWizardPlatform.prototype = {
             return Promise.resolve();
         }
     },
-
     getBasicAuthHeader: function (username, password) {
         const passHash = crypto.createHash('sha1');
         passHash.update(password);
 
         return 'Basic ' + Buffer.from(username + ':' + passHash.digest('hex')).toString('base64');
     },
-
     isSessionStillValid: function (sessionTimestamp) {
         const platform = this;
 
@@ -168,7 +189,6 @@ HomeWizardPlatform.prototype = {
         platform.log('WARNING: Authentication expired, a new session must be created!');
         return false;
     },
-
     getHubAndSwitchIdsByHubName: function (hubName) {
         const platform = this;
 
@@ -188,7 +208,7 @@ HomeWizardPlatform.prototype = {
                             platform.hubId = hub.id;
 
                             hub.devices.forEach((device) => {
-                                platform.log('Switch ' + device.name + ', id:' + device.id);
+                                platform.log('Found ' + device.name + ', id:' + device.id);
                                 platform.switches.push({name: device.name, id: device.id});
                             });
                             return true;
@@ -201,7 +221,6 @@ HomeWizardPlatform.prototype = {
             return Promise.resolve();
         }
     },
-
     setSwitchState: function (switchId, turnOn) {
         const platform = this;
 
