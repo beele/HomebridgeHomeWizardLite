@@ -38,7 +38,6 @@ function HomeWizardPlatform(log, config, api) {
     this.sessionId = null;
     this.sessionTimestamp = null;
 
-    this.hubId = null;
     this.switches = [];
 
     if (api) {
@@ -88,7 +87,7 @@ HomeWizardPlatform.prototype = {
         const uuid = UUIDGen.generate(sw.name);
         const newAccessory = new Accessory(sw.name, uuid);
 
-        newAccessory.context = {id: sw.id};
+        newAccessory.context = {id: sw.id, hubId: sw.hubId, isOn: 0};
         newAccessory.addService(Service.Switch, sw.name);
 
         platform.api.registerPlatformAccessories('homebridge-homewizard-lite', 'HomeWizard-Lite', [newAccessory]);
@@ -99,6 +98,7 @@ HomeWizardPlatform.prototype = {
         platform.accessories.push(accessory);
 
         const id = accessory.context.id;
+        const hubId = accessory.context.hubId;
         platform.log('Configuring ' + id);
 
         accessory.getService(Service.AccessoryInformation)
@@ -109,12 +109,12 @@ HomeWizardPlatform.prototype = {
         accessory.getService(Service.Switch)
             .getCharacteristic(Characteristic.On)
             .on('get', (callback) => {
-                callback(accessory.context.isOn);
+                callback(null, accessory.context.isOn);
             })
             .on('set', (value, callback) => {
                 platform.authenticate(platform.username, platform.password)
                     .then(() => {
-                        return platform.setSwitchState(id, value);
+                        return platform.setSwitchState(id, hubId, value);
                     })
                     .then(() => {
                         accessory.context.isOn = value;
@@ -130,6 +130,11 @@ HomeWizardPlatform.prototype = {
                         return callback({error: 'Could not set switch state', details: error});
                     });
             });
+
+        accessory.on('identify', function(paired, callback) {
+            platform.log(accessory.displayName, "Identify!!!");
+            callback();
+        });
     },
     removeAccessory: function (name) {
         const platform = this;
@@ -192,7 +197,7 @@ HomeWizardPlatform.prototype = {
     getHubAndSwitchIdsByHubName: function (hubName) {
         const platform = this;
 
-        if (platform.hubId === null) {
+        if (!platform.switches || platform.switches.length === 0) {
             const opt = {
                 uri: 'https://plug.homewizard.com/plugs',
                 headers: {
@@ -205,11 +210,10 @@ HomeWizardPlatform.prototype = {
                     response.some((hub) => {
                         if (hub.name === hubName) {
                             platform.log('Hub ' + hubName + ' found, id: ' + hub.id);
-                            platform.hubId = hub.id;
 
                             hub.devices.forEach((device) => {
                                 platform.log('Found ' + device.name + ', id:' + device.id);
-                                platform.switches.push({name: device.name, id: device.id});
+                                platform.switches.push({name: device.name, id: device.id, hubId: hub.id});
                             });
                             return true;
                         }
@@ -221,11 +225,11 @@ HomeWizardPlatform.prototype = {
             return Promise.resolve();
         }
     },
-    setSwitchState: function (switchId, turnOn) {
+    setSwitchState: function (switchId, hubId, turnOn) {
         const platform = this;
 
         const opt = {
-            uri: 'https://plug.homewizard.com/plugs/' + platform.hubId + '/devices/' + switchId + '/action',
+            uri: 'https://plug.homewizard.com/plugs/' + hubId + '/devices/' + switchId + '/action',
             headers: {
                 'X-Session-Token': platform.sessionId,
                 'Content-Type': 'application/json; charset=utf-8'
