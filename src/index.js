@@ -3,12 +3,12 @@ const crypto = require('crypto');
 
 // "platforms": [
 //   {
-//     "platform": "HomebridgeHomeWizardLite",
+//     "platform": "HomeWizard-Lite",
 //     "name": "display-name",
 //     "room": "room-name",
 //     "username": "user@domain.tld",
 //     "password": "password",
-//     "hub": "test-hub-name",
+//     "hub": "test-hub-name"
 //   }
 // ]
 
