@@ -5,15 +5,11 @@ module.exports.HomeWizard = function (logger) {
     const me = this;
     me.log = logger;
 
-    me.retry = function retry(maxRetries, fn) {
-        return fn().catch(function (err) {
-            if (maxRetries <= 0) {
-                throw err;
-            }
-            console.log('failed, retrying!');
-            return retry(maxRetries - 1, fn);
-        });
-    };
+    me.pause = (duration) => new Promise(res => setTimeout(res, duration));
+    me.backoff = (retries, fn, delay = 1000) =>
+        fn().catch(err => retries > 1
+            ? me.pause(delay).then(() => me.backoff(retries - 1, fn, delay * 2))
+            : Promise.reject(err));
 
     me.authenticate = function (username, password) {
         if (!username || !password) {
@@ -28,7 +24,7 @@ module.exports.HomeWizard = function (logger) {
                 json: true
             };
             return me
-                .retry(3, () => {
+                .backoff(3, () => {
                     return request.get(opts);
                 })
                 .then((response) => {
@@ -74,7 +70,7 @@ module.exports.HomeWizard = function (logger) {
         };
 
         return me
-            .retry(3, () => {
+            .backoff(3, () => {
                 return request.get(opts);
             })
             .then((response) => {
@@ -106,7 +102,7 @@ module.exports.HomeWizard = function (logger) {
             json: true
         };
         return me
-            .retry(3, () => {
+            .backoff(3, () => {
                 return request.post(opt);
             });
     };
