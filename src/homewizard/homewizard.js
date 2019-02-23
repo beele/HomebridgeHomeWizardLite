@@ -65,14 +65,18 @@ module.exports.HomeWizard = function (logger) {
     me.getHubAndSwitchIdsByHubName = function (session, hubName) {
         const switches = [];
 
-        const opt = {
+        const opts = {
             uri: 'https://plug.homewizard.com/plugs',
             headers: {
                 'X-Session-Token': session.token
             },
             json: true,
         };
-        return request.get(opt)
+
+        return me
+            .retry(3, () => {
+                return request.get(opts);
+            })
             .then((response) => {
                 response.some((hub) => {
                     if (hub.name === hubName) {
@@ -101,6 +105,9 @@ module.exports.HomeWizard = function (logger) {
             },
             json: true
         };
-        return request.post(opt);
+        return me
+            .retry(3, () => {
+                return request.post(opt);
+            });
     };
 };
