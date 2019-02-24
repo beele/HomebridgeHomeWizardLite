@@ -20,10 +20,9 @@ test('HomeWizard-authentication-username-and-password-valid', done => {
             expect(session).not.toBeNull();
             expect(session.token).not.toBeNull();
             expect(session.timestamp).not.toBeNull();
+            expect(requestMock).toBeCalledTimes(1);
 
-            //TODO: Find out why this test works when ran as a single test but fails when ran as part of the suite when the line below is enabled!
-            //expect(requestMock).toBeCalledTimes(1);
-
+            requestMock.mockReset();
             done();
         })
         .catch((error) => {
@@ -41,10 +40,9 @@ test('HomeWizard-authentication-unreachable-first-time', done => {
             expect(session).not.toBeNull();
             expect(session.token).not.toBeNull();
             expect(session.timestamp).not.toBeNull();
+            expect(requestMock).toBeCalledTimes(2);
 
-            //TODO: Find out why this test works when ran as a single test but fails when ran as part of the suite when the line below is enabled!
-            //expect(requestMock).toBeCalledTimes(2);
-
+            requestMock.mockReset();
             done();
         })
         .catch((error) => {
@@ -72,6 +70,9 @@ test('HomeWizard-authentication-unreachable', done => {
         })
         .catch((error) => {
             expect(error).not.toBeNull();
+            expect(requestMock).toBeCalledTimes(3);
+
+            requestMock.mockReset();
             done();
         });
 });
@@ -85,6 +86,9 @@ test('HomeWizard-authentication-non-valid-credentials', done => {
         })
         .catch((error) => {
             expect(error).not.toBeNull();
+            expect(requestMock).toBeCalledTimes(1);
+
+            requestMock.mockReset();
             done();
         });
 });
@@ -102,7 +106,9 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches', done => {
         .then((switches) => {
             expect(switches).not.toBeNull();
             expect(switches.length).toEqual(5);
+            expect(requestMock).toBeCalledTimes(1);
 
+            requestMock.mockReset();
             done();
         })
         .catch((error) => {
@@ -121,7 +127,9 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches-unreachable-fir
         .then((switches) => {
             expect(switches).not.toBeNull();
             expect(switches.length).toEqual(5);
+            expect(requestMock).toBeCalledTimes(2);
 
+            requestMock.mockReset();
             done();
         })
         .catch((error) => {
@@ -142,6 +150,9 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-unreachable', done => {
         })
         .catch((error) => {
             expect(error).not.toBeNull();
+            expect(requestMock).toBeCalledTimes(3);
+
+            requestMock.mockReset();
             done();
         });
 });
@@ -159,7 +170,9 @@ test('HomeWizard-setSwitchState-switch-found-successful', done => {
         .then((result) => {
             expect(result).not.toBeNull();
             expect(result.status).toEqual('Success');
+            expect(requestMock).toBeCalledTimes(1);
 
+            requestMock.mockReset();
             done();
         })
         .catch((error) => {
@@ -178,7 +191,9 @@ test('HomeWizard-setSwitchState-switch-found-successful-unreachable-first-time',
         .then((result) => {
             expect(result).not.toBeNull();
             expect(result.status).toEqual('Success');
+            expect(requestMock).toBeCalledTimes(2);
 
+            requestMock.mockReset();
             done();
         })
         .catch((error) => {
@@ -199,6 +214,9 @@ test('HomeWizard-setSwitchState-unreachable-or-switch-not-found', done => {
         })
         .catch((error) => {
             expect(error).not.toBeNull();
+            expect(requestMock).toBeCalledTimes(3);
+
+            requestMock.mockReset();
             done();
         });
 });
@@ -214,7 +232,9 @@ test('HomeWizard-setSwitchState-switch-found-not-successful', done => {
         .then((result) => {
             expect(result).not.toBeNull();
             expect(result).not.toEqual('Success');
+            expect(requestMock).toBeCalledTimes(1);
 
+            requestMock.mockReset();
             done();
         })
         .catch((error) => {
@@ -341,6 +361,7 @@ function mockSwitchStatePostRequestReject(succeedAfterAttempt = -1) {
             }
         });
     }
+    return mock;
 }
 function mockSwitchStatePostRequestResolve(responseContainsError) {
     const mock = jest.spyOn(request, 'post');
