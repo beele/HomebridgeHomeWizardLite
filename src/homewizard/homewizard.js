@@ -49,10 +49,10 @@ module.exports.HomeWizard = function (logger) {
         return 'Basic ' + Buffer.from(username + ':' + passHash.digest('hex')).toString('base64');
     };
 
-    me.isSessionStillValid = function (sessionTimestamp) {
+    me.isSessionStillValid = function (session) {
         //Validity duration is somewhere between 1 and 1,5 hours, for now set at 1 hour!
-        if ((sessionTimestamp + (3600 * 1000)) >= Date.now()) {
-            return Promise.resolve(true);
+        if ((session.timestamp + (3600 * 1000)) >= Date.now()) {
+            return Promise.resolve(session);
         }
         me.log('WARNING: Session expired, a new session must be created!');
         return Promise.reject('Session expired');
