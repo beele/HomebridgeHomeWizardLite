@@ -51,7 +51,7 @@ module.exports.HomeWizard = function (logger) {
 
     me.isSessionStillValid = function (session) {
         //Validity duration is somewhere between 1 and 1,5 hours, for now set at 1 hour!
-        if ((session.timestamp + (3600 * 1000)) >= Date.now()) {
+        if (session && (session.timestamp + (3600 * 1000)) >= Date.now()) {
             return Promise.resolve(session);
         }
         me.log('WARNING: Session expired, a new session must be created!');

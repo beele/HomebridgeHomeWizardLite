@@ -24,7 +24,7 @@
     "url": "https://github.com/beele/HomebridgeHomeWizardLite/issues"
   },
   "engines": {
-    "node": ">=9.8.0",
+    "node": ">=10.15.1",
     "homebridge": ">=0.4.46"
   },
   "author": "Kevin Van den Abeele",
