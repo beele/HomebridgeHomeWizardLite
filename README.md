@@ -27,7 +27,8 @@ All the switches under the hub are automatically enumerated and added as accesso
 Each switch will be available as a separate accessory in the Home app.
 
 Because these switches do not report their current on/off state it is important that they are in the off state when you start to use them with the HomeKit app.
-All of/off state is kept in the Homebridge plugin.
+All on/off state is kept in the Homebridge plugin.
+Adding or removing switches after the initial setup is currently not supported! 
 
 Tested with:
 
