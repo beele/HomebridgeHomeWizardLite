@@ -31,11 +31,11 @@ module.exports.Flows = function (homeWizard, logger, username, password) {
                 return me.homeWizard.getHubAndSwitchIdsByHubName(me.session, hub);
             })
             .then((switches) => {
+                me.log('Switches retrieved!');
                 switches.forEach(sw => {
                     me.log('Adding switch: ' + sw.name + ' :' + sw.id);
                     me.switches.push(sw);
                 });
-                me.log('Switches retrieved!');
                 return Promise.resolve(me.switches);
             })
             .catch((error) => {
@@ -54,8 +54,10 @@ module.exports.Flows = function (homeWizard, logger, username, password) {
             })
             .then((result) => {
                 if (result.status === 'Success') {
+                    me.log('Switch ' + switchId + ' switched state to ' + value ? 'On' : 'Off');
                     return Promise.resolve(value);
                 } else {
+                    me.log('Switch ' + switchId + ' could not be switched to state ' + value ? 'On' : 'Off');
                     return Promise.reject('Switch ' + switchId + ' state could not be set!');
                 }
             })
