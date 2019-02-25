@@ -5,7 +5,7 @@
 This Homebridge plugin allow the control of HomeWizard Lite switches (also known as flamingo switches).
 
 To install this plugin simple type `sudo npm install homebridge-homewizard-flamingo -g --unsafe-perm=true`.
-Next open the config.json that contains your Homebridge configuration and add a block like the following one to the accessories array:
+Next open the config.json that contains your Homebridge configuration and add a block like the following one to the platforms array:
 
 ```javascript
 {
