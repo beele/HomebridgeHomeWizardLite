@@ -6,11 +6,86 @@ const Mocks = new RequestMocking();
 beforeEach(() => {
     console.log('resetting modules!');
     jest.resetModules();
+    jest.resetAllMocks();
     jest.setTimeout(10000);
 });
 
+test('HomeWizard-getBasicAuthHeader-username-password-not-null', done => {
+    const homeWizard = new HomeWizard((message) => console.log(message));
+
+    const authHeader = homeWizard.getBasicAuthHeader('valid@example.com', 'validPassword');
+    expect(authHeader).not.toBeUndefined();
+    expect(authHeader).not.toBeNull();
+
+    done();
+});
+test('HomeWizard-getBasicAuthHeader-username-password-null', done => {
+    const homeWizard = new HomeWizard((message) => console.log(message));
+
+    const authHeader = homeWizard.getBasicAuthHeader('null', 'null');
+    expect(authHeader).not.toBeUndefined();
+    expect(authHeader).not.toBeNull();
+
+    done();
+});
+
+
+test('HomeWizard-isSessionStillValid-session-valid', done => {
+    const homeWizard = new HomeWizard((message) => console.log(message));
+
+    const session = {
+        token: 'dummy-token',
+        timestamp: Date.now()
+    };
+
+    homeWizard.isSessionStillValid(session)
+        .then((session) => {
+            expect(session).not.toBeUndefined();
+            expect(session).not.toBeNull();
+
+            done();
+        })
+        .catch((error) => {
+            fail('When the session is valid it should be returned!');
+        });
+});
+test('HomeWizard-isSessionStillValid-session-invalid', done => {
+    const homeWizard = new HomeWizard((message) => console.log(message));
+
+    const session = {
+        token: 'dummy-token',
+        timestamp: (Date.now() - (3600 * 1000) - 1)
+    };
+
+    homeWizard.isSessionStillValid(session)
+        .then((session) => {
+            fail('When the session is invalid it should not be returned!');
+        })
+        .catch((error) => {
+            expect(error).not.toBeUndefined();
+            expect(error).not.toBeNull();
+
+            done();
+        });
+});
+test('HomeWizard-isSessionStillValid-session-null', done => {
+    const homeWizard = new HomeWizard((message) => console.log(message));
+
+    homeWizard.isSessionStillValid(null)
+        .then((session) => {
+            fail('When the session is invalid it should not be returned!');
+        })
+        .catch((error) => {
+            expect(error).not.toBeUndefined();
+            expect(error).not.toBeNull();
+
+            done();
+        });
+});
+
+
 test('HomeWizard-authentication-username-and-password-valid', done => {
-    const requestMock = Mocks.mockAuthenticationGetRequest(0,false);
+    const requestMock = Mocks.mockAuthenticationGetRequest(0, false);
 
     const homeWizard = new HomeWizard((message) => console.log(message));
     homeWizard.authenticate('valid@example.com', 'validPassword')
@@ -22,7 +97,6 @@ test('HomeWizard-authentication-username-and-password-valid', done => {
             expect(session.timestamp).not.toBeNull();
             expect(requestMock).toBeCalledTimes(1);
 
-            requestMock.mockReset();
             done();
         })
         .catch((error) => {
@@ -42,7 +116,6 @@ test('HomeWizard-authentication-unreachable-first-time', done => {
             expect(session.timestamp).not.toBeNull();
             expect(requestMock).toBeCalledTimes(2);
 
-            requestMock.mockReset();
             done();
         })
         .catch((error) => {
@@ -72,12 +145,11 @@ test('HomeWizard-authentication-unreachable', done => {
             expect(error).not.toBeNull();
             expect(requestMock).toBeCalledTimes(3);
 
-            requestMock.mockReset();
             done();
         });
 });
 test('HomeWizard-authentication-non-valid-credentials', done => {
-    const requestMock = Mocks.mockAuthenticationGetRequest(0,true);
+    const requestMock = Mocks.mockAuthenticationGetRequest(0, true);
 
     const homeWizard = new HomeWizard((message) => console.log(message));
     homeWizard.authenticate('dummy-username', 'dummy-password')
@@ -88,7 +160,6 @@ test('HomeWizard-authentication-non-valid-credentials', done => {
             expect(error).not.toBeNull();
             expect(requestMock).toBeCalledTimes(1);
 
-            requestMock.mockReset();
             done();
         });
 });
@@ -108,7 +179,6 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches', done => {
             expect(switches.length).toEqual(5);
             expect(requestMock).toBeCalledTimes(1);
 
-            requestMock.mockReset();
             done();
         })
         .catch((error) => {
@@ -129,7 +199,6 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches-unreachable-fir
             expect(switches.length).toEqual(5);
             expect(requestMock).toBeCalledTimes(2);
 
-            requestMock.mockReset();
             done();
         })
         .catch((error) => {
@@ -152,14 +221,13 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-unreachable', done => {
             expect(error).not.toBeNull();
             expect(requestMock).toBeCalledTimes(3);
 
-            requestMock.mockReset();
             done();
         });
 });
 
 
 test('HomeWizard-setSwitchState-switch-found-successful', done => {
-    const requestMock = Mocks.mockSwitchStatePostRequest(0,false);
+    const requestMock = Mocks.mockSwitchStatePostRequest(0, false);
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -172,7 +240,6 @@ test('HomeWizard-setSwitchState-switch-found-successful', done => {
             expect(result.status).toEqual('Success');
             expect(requestMock).toBeCalledTimes(1);
 
-            requestMock.mockReset();
             done();
         })
         .catch((error) => {
@@ -193,7 +260,6 @@ test('HomeWizard-setSwitchState-switch-found-successful-unreachable-first-time',
             expect(result.status).toEqual('Success');
             expect(requestMock).toBeCalledTimes(2);
 
-            requestMock.mockReset();
             done();
         })
         .catch((error) => {
@@ -216,12 +282,11 @@ test('HomeWizard-setSwitchState-unreachable-or-switch-not-found', done => {
             expect(error).not.toBeNull();
             expect(requestMock).toBeCalledTimes(3);
 
-            requestMock.mockReset();
             done();
         });
 });
 test('HomeWizard-setSwitchState-switch-found-not-successful', done => {
-    const requestMock = Mocks.mockSwitchStatePostRequest(0,true);
+    const requestMock = Mocks.mockSwitchStatePostRequest(0, true);
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -234,7 +299,6 @@ test('HomeWizard-setSwitchState-switch-found-not-successful', done => {
             expect(result).not.toEqual('Success');
             expect(requestMock).toBeCalledTimes(1);
 
-            requestMock.mockReset();
             done();
         })
         .catch((error) => {

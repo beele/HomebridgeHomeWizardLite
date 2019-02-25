@@ -28,7 +28,6 @@ module.exports.HomeWizard = function (logger) {
                     return request.get(opts);
                 })
                 .then((response) => {
-                    console.log(response);
                     if (response.error && response.error === 110) {
                         return Promise.reject(response);
                     } else {
