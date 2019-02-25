@@ -41,8 +41,9 @@ module.exports.Flows = function (homeWizard, logger, username, password) {
             .catch((error) => {
                 me.session = null;
                 me.switches = [];
+
                 me.log('ERROR: hub and switch ids could not be fetched, details: ' + error);
-                return Promise.resolve(me.switches);
+                return Promise.reject('ERROR: hub and switch ids could not be fetched, details: ' + error);
             });
     };
 
@@ -55,13 +56,14 @@ module.exports.Flows = function (homeWizard, logger, username, password) {
                 if (result.status === 'Success') {
                     return Promise.resolve(value);
                 } else {
-                    me.log('Switch ' + switchId + ' state could not be set!');
                     return Promise.reject('Switch ' + switchId + ' state could not be set!');
                 }
             })
             .catch((error) => {
-                me.log('Switch ' + switchId + ' state could not be set!');
-                return Promise.reject('Switch ' + switchId + ' state could not be set!');
+                me.session = null;
+
+                me.log(error);
+                return Promise.reject(error);
             });
     };
 };

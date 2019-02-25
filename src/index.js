@@ -46,7 +46,10 @@ function HomeWizardPlatform(log, config, api) {
 
             if (platform.accessories.length > 0) {
                 platform.log('Accessories restored from cache!');
-                platform.flows.authenticationFlow();
+                platform.flows.authenticationFlow()
+                    .then((session) => {
+                        platform.log('Authenticated, session stored!')
+                    })
             } else {
                 platform.log('No Accessories in cache, creating...');
                 platform.flows.processSwitchesFlow(platform.hub)
