@@ -1,6 +1,7 @@
 const HomeWizard = require("./homewizard").HomeWizard;
+const RequestMocking = require("./mocking/request-mocking").RequestMocking;
 
-const request = require('request-promise-native');
+const Mocks = new RequestMocking();
 
 beforeEach(() => {
     console.log('resetting modules!');
@@ -8,9 +9,8 @@ beforeEach(() => {
     jest.setTimeout(10000);
 });
 
-
 test('HomeWizard-authentication-username-and-password-valid', done => {
-    const requestMock = mockAuthenticationGetRequestResolve(false);
+    const requestMock = Mocks.mockAuthenticationGetRequestResolve(false);
 
     const homeWizard = new HomeWizard((message) => console.log(message));
     homeWizard.authenticate('valid@example.com', 'validPassword')
@@ -30,7 +30,7 @@ test('HomeWizard-authentication-username-and-password-valid', done => {
         });
 });
 test('HomeWizard-authentication-unreachable-first-time', done => {
-    const requestMock = mockAuthenticationGetRequestReject(1);
+    const requestMock = Mocks.mockAuthenticationGetRequestReject(1);
 
     const homeWizard = new HomeWizard((message) => console.log(message));
     homeWizard.authenticate('dummy-username', 'dummy-password')
@@ -61,7 +61,7 @@ test('HomeWizard-authentication-username-and-password-null', done => {
         });
 });
 test('HomeWizard-authentication-unreachable', done => {
-    const requestMock = mockAuthenticationGetRequestReject();
+    const requestMock = Mocks.mockAuthenticationGetRequestReject();
 
     const homeWizard = new HomeWizard((message) => console.log(message));
     homeWizard.authenticate('dummy-username', 'dummy-password')
@@ -77,7 +77,7 @@ test('HomeWizard-authentication-unreachable', done => {
         });
 });
 test('HomeWizard-authentication-non-valid-credentials', done => {
-    const requestMock = mockAuthenticationGetRequestResolve(true);
+    const requestMock = Mocks.mockAuthenticationGetRequestResolve(true);
 
     const homeWizard = new HomeWizard((message) => console.log(message));
     homeWizard.authenticate('dummy-username', 'dummy-password')
@@ -95,7 +95,7 @@ test('HomeWizard-authentication-non-valid-credentials', done => {
 
 
 test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches', done => {
-    const requestMock = mockPlugsGetRequestResolve();
+    const requestMock = Mocks.mockPlugsGetRequestResolve();
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -116,7 +116,7 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches', done => {
         });
 });
 test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches-unreachable-first-time', done => {
-    const requestMock = mockPlugsGetRequestReject(1);
+    const requestMock = Mocks.mockPlugsGetRequestReject(1);
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -137,7 +137,7 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches-unreachable-fir
         });
 });
 test('HomeWizard-getHubAndSwitchIdsByHubName-unreachable', done => {
-    const requestMock = mockPlugsGetRequestReject();
+    const requestMock = Mocks.mockPlugsGetRequestReject();
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -159,7 +159,7 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-unreachable', done => {
 
 
 test('HomeWizard-setSwitchState-switch-found-successful', done => {
-    const requestMock = mockSwitchStatePostRequestResolve(false);
+    const requestMock = Mocks.mockSwitchStatePostRequestResolve(false);
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -180,7 +180,7 @@ test('HomeWizard-setSwitchState-switch-found-successful', done => {
         });
 });
 test('HomeWizard-setSwitchState-switch-found-successful-unreachable-first-time', done => {
-    const requestMock = mockSwitchStatePostRequestReject(1);
+    const requestMock = Mocks.mockSwitchStatePostRequestReject(1);
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -201,7 +201,7 @@ test('HomeWizard-setSwitchState-switch-found-successful-unreachable-first-time',
         });
 });
 test('HomeWizard-setSwitchState-unreachable-or-switch-not-found', done => {
-    const requestMock = mockSwitchStatePostRequestReject();
+    const requestMock = Mocks.mockSwitchStatePostRequestReject();
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -221,7 +221,7 @@ test('HomeWizard-setSwitchState-unreachable-or-switch-not-found', done => {
         });
 });
 test('HomeWizard-setSwitchState-switch-found-not-successful', done => {
-    const requestMock = mockSwitchStatePostRequestResolve(true);
+    const requestMock = Mocks.mockSwitchStatePostRequestResolve(true);
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -241,139 +241,3 @@ test('HomeWizard-setSwitchState-switch-found-not-successful', done => {
             fail('setSwitchState should return a failure message');
         });
 });
-
-
-
-////////////////////////////////////////////
-/// Mock request calls to HomeWizard API ///
-////////////////////////////////////////////
-function mockAuthenticationGetRequestReject(succeedAfterAttempt = -1) {
-    const mock = jest.spyOn(request, 'get');
-
-    let count = 0;
-    if(succeedAfterAttempt === -1) {
-        mock.mockImplementation((opts) => {
-            console.log('Mock called');
-
-            return Promise.reject('dummy-fail');
-        });
-    } else {
-        mock.mockImplementation((opts) => {
-            console.log('Mock called');
-
-            if(count++ < succeedAfterAttempt) {
-                return Promise.reject('dummy-fail');
-            } else {
-                return Promise.resolve({session: 'dummy-session-token'});
-            }
-        });
-    }
-    return mock;
-}
-function mockAuthenticationGetRequestResolve(responseContainsError) {
-    const mock = jest.spyOn(request, 'get');
-    mock.mockImplementation((opts) => {
-        console.log('Mock called');
-
-        if (responseContainsError) {
-            return Promise.resolve({error: 110, message: 'dummy-fail'});
-        } else {
-            return Promise.resolve({session: 'dummy-session-token'});
-        }
-    });
-    return mock;
-}
-
-
-function mockPlugsGetRequestReject(succeedAfterAttempt = -1) {
-    const mock = jest.spyOn(request, 'get');
-
-    let count = 0;
-    if(succeedAfterAttempt === -1) {
-        mock.mockImplementation((opts) => {
-            console.log('Mock called');
-
-            return Promise.reject('dummy-fail');
-        });
-    } else {
-        mock.mockImplementation((opts) => {
-            console.log('Mock called');
-
-            if(count++ < succeedAfterAttempt) {
-                return Promise.reject('dummy-fail');
-            } else {
-                return Promise.resolve(getPlugsReplyData());
-            }
-        });
-    }
-    return mock;
-}
-function mockPlugsGetRequestResolve() {
-    const mock = jest.spyOn(request, 'get');
-    mock.mockImplementation((opts) => {
-        console.log('Mock called');
-
-        return Promise.resolve(getPlugsReplyData());
-    });
-    return mock;
-}
-function getPlugsReplyData() {
-    const reply = [{
-        id: 'dummy-id',
-        identifier: 'dummy-identifier',
-        name: 'dummy-name',
-        latitude: 0,
-        longitude: 0,
-        devices: []
-    }];
-    for(let i = 0; i < 5; i++) {
-        const device = {
-            id: 'id-' + (i + 1),
-            typeName: 'flamingo_switch',
-            name: 'switch' + (i +  1),
-            code: null,
-            iconUrl: 'dummy-icon'
-        };
-        reply[0].devices.push(device);
-    }
-    return reply;
-}
-
-
-function mockSwitchStatePostRequestReject(succeedAfterAttempt = -1) {
-    const mock = jest.spyOn(request, 'post');
-
-    let count = 0;
-    if(succeedAfterAttempt === -1) {
-        mock.mockImplementation((opts) => {
-            console.log('Mock called');
-
-            return Promise.reject('dummy-fail');
-        });
-    } else {
-        mock.mockImplementation((opts) => {
-            console.log('Mock called');
-
-            if(count++ < succeedAfterAttempt) {
-                return Promise.reject('dummy-fail');
-            } else {
-                return Promise.resolve({status: 'Success'});
-            }
-        });
-    }
-    return mock;
-}
-function mockSwitchStatePostRequestResolve(responseContainsError) {
-    const mock = jest.spyOn(request, 'post');
-    mock.mockImplementation((opts) => {
-        console.log('Mock called');
-
-        if (responseContainsError) {
-            //Actual response is unknown!
-            return Promise.resolve({status: 'Failed'})
-        } else {
-            return Promise.resolve({status: 'Success'});
-        }
-    });
-    return mock;
-}

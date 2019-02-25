@@ -15,33 +15,20 @@ module.exports.Flows = function (homeWizard, logger, username, password) {
             .catch((reason) => {
                 return me.homeWizard.authenticate(me.username, me.password);
             })
-            .catch((error) => {
-                me.log('Authentication failed: ' + JSON.stringify(error, null, 4));
-                return Promise.resolve(null);
-            })
-            .finally((session) => {
+            .then((session) => {
                 me.session = session;
                 return Promise.resolve();
+            })
+            .catch((error) => {
+                me.log('Authentication failed: ' + JSON.stringify(error, null, 4));
+                return Promise.reject('Authentication failed: ' + error);
             });
     };
 
     me.processSwitchesFlow = function (hub) {
-        return me.homeWizard.isSessionStillValid(me.session)
-            .catch((reason) => {
-                return me.homeWizard.authenticate(me.username, me.password);
-            })
-            .catch((error) => {
-                me.log('Authentication failed: ' + JSON.stringify(error, null, 4));
-                return Promise.resolve(null);
-            })
-            .finally((session) => {
-                me.session = session;
-
-                if (me.session === null) {
-                    return Promise.reject('A valid session could not be obtained!');
-                } else {
-                    return me.homeWizard.getHubAndSwitchIdsByHubName(me.session, hub);
-                }
+        return me.authenticationFlow()
+            .then(() => {
+                return me.homeWizard.getHubAndSwitchIdsByHubName(me.session, hub);
             })
             .then((switches) => {
                 switches.forEach(sw => {
@@ -60,22 +47,9 @@ module.exports.Flows = function (homeWizard, logger, username, password) {
     };
 
     me.setSwitchStateFlow = function (switchId, hubId, value) {
-        return me.homeWizard.isSessionStillValid(me.session)
-            .catch((reason) => {
-                return me.homeWizard.authenticate(me.username, me.password);
-            })
-            .catch((error) => {
-                me.log('Authentication failed: ' + JSON.stringify(error, null, 4));
-                return Promise.resolve(null);
-            })
-            .finally((session) => {
-                me.session = session;
-
-                if (session === null) {
-                    return Promise.reject('A valid session could not be obtained!');
-                } else {
-                    return me.homeWizard.setSwitchState(me.session, switchId, hubId, value);
-                }
+        return me.authenticationFlow()
+            .then(() => {
+                return me.homeWizard.setSwitchState(me.session, switchId, hubId, value);
             })
             .then((result) => {
                 if(result.status === 'Success') {

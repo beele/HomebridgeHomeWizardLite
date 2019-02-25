@@ -32,7 +32,7 @@ module.exports.HomeWizard = function (logger) {
                     if (response.error && response.error === 110) {
                         return Promise.reject(response);
                     } else {
-                        me.log('Authenticated, session set');
+                        me.log('Authenticated, returning session');
                         return Promise.resolve({
                             token: response.session,
                             timestamp: Date.now()
@@ -51,11 +51,16 @@ module.exports.HomeWizard = function (logger) {
 
     me.isSessionStillValid = function (session) {
         //Validity duration is somewhere between 1 and 1,5 hours, for now set at 1 hour!
-        if (session && (session.timestamp + (3600 * 1000)) >= Date.now()) {
-            return Promise.resolve(session);
+        if (session) {
+            if ((session.timestamp + (3600 * 1000)) >= Date.now()) {
+                return Promise.resolve(session);
+            } else {
+                me.log('WARNING: Session expired, a new session must be created!');
+            }
+        } else {
+            me.log('WARNING: No previous session found, a new session must be created!');
         }
-        me.log('WARNING: Session expired, a new session must be created!');
-        return Promise.reject('Session expired');
+        return Promise.reject('No valid session');
     };
 
     me.getHubAndSwitchIdsByHubName = function (session, hubName) {
