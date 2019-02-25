@@ -6,7 +6,7 @@ const request = require('request-promise-native');
 module.exports.RequestMocking = function() {
     const me = this;
 
-    me.mockAuthenticationGetRequestReject = function (succeedAfterAttempt = -1) {
+    me.mockAuthenticationGetRequest = function (succeedAfterAttempt = -1, responseContainsError = false) {
         const mock = jest.spyOn(request, 'get');
 
         let count = 0;
@@ -23,28 +23,17 @@ module.exports.RequestMocking = function() {
                 if(count++ < succeedAfterAttempt) {
                     return Promise.reject('dummy-fail');
                 } else {
+                    if (responseContainsError) {
+                        return Promise.resolve({error: 110, message: 'dummy-fail'});
+                    }
                     return Promise.resolve({session: 'dummy-session-token'});
                 }
             });
         }
         return mock;
     };
-    me.mockAuthenticationGetRequestResolve = function (responseContainsError) {
-        const mock = jest.spyOn(request, 'get');
-        mock.mockImplementation((opts) => {
-            console.log('Mock called');
 
-            if (responseContainsError) {
-                return Promise.resolve({error: 110, message: 'dummy-fail'});
-            } else {
-                return Promise.resolve({session: 'dummy-session-token'});
-            }
-        });
-        return mock;
-    };
-
-
-    me.mockPlugsGetRequestReject = function (succeedAfterAttempt = -1) {
+    me.mockPlugsGetRequest = function (succeedAfterAttempt = -1) {
         const mock = jest.spyOn(request, 'get');
 
         let count = 0;
@@ -65,15 +54,6 @@ module.exports.RequestMocking = function() {
                 }
             });
         }
-        return mock;
-    };
-    me.mockPlugsGetRequestResolve = function () {
-        const mock = jest.spyOn(request, 'get');
-        mock.mockImplementation((opts) => {
-            console.log('Mock called');
-
-            return Promise.resolve(me.getPlugsReplyData());
-        });
         return mock;
     };
     me.getPlugsReplyData = function () {
@@ -98,8 +78,7 @@ module.exports.RequestMocking = function() {
         return reply;
     };
 
-
-    me.mockSwitchStatePostRequestReject = function (succeedAfterAttempt = -1) {
+    me.mockSwitchStatePostRequest = function (succeedAfterAttempt = -1, responseContainsError  = false) {
         const mock = jest.spyOn(request, 'post');
 
         let count = 0;
@@ -116,24 +95,13 @@ module.exports.RequestMocking = function() {
                 if(count++ < succeedAfterAttempt) {
                     return Promise.reject('dummy-fail');
                 } else {
+                    if (responseContainsError) {
+                        return Promise.resolve({status: 'Failed'});
+                    }
                     return Promise.resolve({status: 'Success'});
                 }
             });
         }
-        return mock;
-    };
-    me.mockSwitchStatePostRequestResolve = function (responseContainsError) {
-        const mock = jest.spyOn(request, 'post');
-        mock.mockImplementation((opts) => {
-            console.log('Mock called');
-
-            if (responseContainsError) {
-                //Actual response is unknown!
-                return Promise.resolve({status: 'Failed'})
-            } else {
-                return Promise.resolve({status: 'Success'});
-            }
-        });
         return mock;
     };
 };

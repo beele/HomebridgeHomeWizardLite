@@ -10,7 +10,7 @@ beforeEach(() => {
 });
 
 test('HomeWizard-authentication-username-and-password-valid', done => {
-    const requestMock = Mocks.mockAuthenticationGetRequestResolve(false);
+    const requestMock = Mocks.mockAuthenticationGetRequest(0,false);
 
     const homeWizard = new HomeWizard((message) => console.log(message));
     homeWizard.authenticate('valid@example.com', 'validPassword')
@@ -30,7 +30,7 @@ test('HomeWizard-authentication-username-and-password-valid', done => {
         });
 });
 test('HomeWizard-authentication-unreachable-first-time', done => {
-    const requestMock = Mocks.mockAuthenticationGetRequestReject(1);
+    const requestMock = Mocks.mockAuthenticationGetRequest(1);
 
     const homeWizard = new HomeWizard((message) => console.log(message));
     homeWizard.authenticate('dummy-username', 'dummy-password')
@@ -61,7 +61,7 @@ test('HomeWizard-authentication-username-and-password-null', done => {
         });
 });
 test('HomeWizard-authentication-unreachable', done => {
-    const requestMock = Mocks.mockAuthenticationGetRequestReject();
+    const requestMock = Mocks.mockAuthenticationGetRequest();
 
     const homeWizard = new HomeWizard((message) => console.log(message));
     homeWizard.authenticate('dummy-username', 'dummy-password')
@@ -77,7 +77,7 @@ test('HomeWizard-authentication-unreachable', done => {
         });
 });
 test('HomeWizard-authentication-non-valid-credentials', done => {
-    const requestMock = Mocks.mockAuthenticationGetRequestResolve(true);
+    const requestMock = Mocks.mockAuthenticationGetRequest(0,true);
 
     const homeWizard = new HomeWizard((message) => console.log(message));
     homeWizard.authenticate('dummy-username', 'dummy-password')
@@ -95,7 +95,7 @@ test('HomeWizard-authentication-non-valid-credentials', done => {
 
 
 test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches', done => {
-    const requestMock = Mocks.mockPlugsGetRequestResolve();
+    const requestMock = Mocks.mockPlugsGetRequest(0);
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -116,7 +116,7 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches', done => {
         });
 });
 test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches-unreachable-first-time', done => {
-    const requestMock = Mocks.mockPlugsGetRequestReject(1);
+    const requestMock = Mocks.mockPlugsGetRequest(1);
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -137,7 +137,7 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches-unreachable-fir
         });
 });
 test('HomeWizard-getHubAndSwitchIdsByHubName-unreachable', done => {
-    const requestMock = Mocks.mockPlugsGetRequestReject();
+    const requestMock = Mocks.mockPlugsGetRequest();
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -159,7 +159,7 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-unreachable', done => {
 
 
 test('HomeWizard-setSwitchState-switch-found-successful', done => {
-    const requestMock = Mocks.mockSwitchStatePostRequestResolve(false);
+    const requestMock = Mocks.mockSwitchStatePostRequest(0,false);
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -180,7 +180,7 @@ test('HomeWizard-setSwitchState-switch-found-successful', done => {
         });
 });
 test('HomeWizard-setSwitchState-switch-found-successful-unreachable-first-time', done => {
-    const requestMock = Mocks.mockSwitchStatePostRequestReject(1);
+    const requestMock = Mocks.mockSwitchStatePostRequest(1);
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -201,7 +201,7 @@ test('HomeWizard-setSwitchState-switch-found-successful-unreachable-first-time',
         });
 });
 test('HomeWizard-setSwitchState-unreachable-or-switch-not-found', done => {
-    const requestMock = Mocks.mockSwitchStatePostRequestReject();
+    const requestMock = Mocks.mockSwitchStatePostRequest();
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
@@ -221,7 +221,7 @@ test('HomeWizard-setSwitchState-unreachable-or-switch-not-found', done => {
         });
 });
 test('HomeWizard-setSwitchState-switch-found-not-successful', done => {
-    const requestMock = Mocks.mockSwitchStatePostRequestResolve(true);
+    const requestMock = Mocks.mockSwitchStatePostRequest(0,true);
     const session = {
         token: 'dummy-token',
         timestamp: Date.now()
