@@ -3,14 +3,14 @@ const request = require('request-promise-native');
 ////////////////////////////////////////////
 /// Mock request calls to HomeWizard API ///
 ////////////////////////////////////////////
-module.exports.RequestMocking = function() {
+module.exports.RequestMocking = function () {
     const me = this;
 
     me.mockAuthenticationGetRequest = function (succeedAfterAttempt = -1, responseContainsError = false) {
         const mock = jest.spyOn(request, 'get');
 
         let count = 0;
-        if(succeedAfterAttempt === -1) {
+        if (succeedAfterAttempt === -1) {
             mock.mockImplementation((opts) => {
                 console.log('Mock called');
 
@@ -20,7 +20,7 @@ module.exports.RequestMocking = function() {
             mock.mockImplementation((opts) => {
                 console.log('Mock called');
 
-                if(count++ < succeedAfterAttempt) {
+                if (count++ < succeedAfterAttempt) {
                     return Promise.reject('dummy-fail');
                 } else {
                     if (responseContainsError) {
@@ -37,7 +37,7 @@ module.exports.RequestMocking = function() {
         const mock = jest.spyOn(request, 'get');
 
         let count = 0;
-        if(succeedAfterAttempt === -1) {
+        if (succeedAfterAttempt === -1) {
             mock.mockImplementation((opts) => {
                 console.log('Mock called');
 
@@ -47,7 +47,7 @@ module.exports.RequestMocking = function() {
             mock.mockImplementation((opts) => {
                 console.log('Mock called');
 
-                if(count++ < succeedAfterAttempt) {
+                if (count++ < succeedAfterAttempt) {
                     return Promise.reject('dummy-fail');
                 } else {
                     return Promise.resolve(me.getPlugsReplyData());
@@ -65,11 +65,11 @@ module.exports.RequestMocking = function() {
             longitude: 0,
             devices: []
         }];
-        for(let i = 0; i < 5; i++) {
+        for (let i = 0; i < 5; i++) {
             const device = {
                 id: 'id-' + (i + 1),
                 typeName: 'flamingo_switch',
-                name: 'switch' + (i +  1),
+                name: 'switch' + (i + 1),
                 code: null,
                 iconUrl: 'dummy-icon'
             };
@@ -78,11 +78,11 @@ module.exports.RequestMocking = function() {
         return reply;
     };
 
-    me.mockSwitchStatePostRequest = function (succeedAfterAttempt = -1, responseContainsError  = false) {
+    me.mockSwitchStatePostRequest = function (succeedAfterAttempt = -1, responseContainsError = false) {
         const mock = jest.spyOn(request, 'post');
 
         let count = 0;
-        if(succeedAfterAttempt === -1) {
+        if (succeedAfterAttempt === -1) {
             mock.mockImplementation((opts) => {
                 console.log('Mock called');
 
@@ -92,7 +92,7 @@ module.exports.RequestMocking = function() {
             mock.mockImplementation((opts) => {
                 console.log('Mock called');
 
-                if(count++ < succeedAfterAttempt) {
+                if (count++ < succeedAfterAttempt) {
                     return Promise.reject('dummy-fail');
                 } else {
                     if (responseContainsError) {

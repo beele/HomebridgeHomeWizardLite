@@ -52,7 +52,7 @@ module.exports.Flows = function (homeWizard, logger, username, password) {
                 return me.homeWizard.setSwitchState(me.session, switchId, hubId, value);
             })
             .then((result) => {
-                if(result.status === 'Success') {
+                if (result.status === 'Success') {
                     return Promise.resolve(value);
                 } else {
                     me.log('Switch ' + switchId + ' state could not be set!');

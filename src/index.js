@@ -1,16 +1,20 @@
 const Flows = require("./homewizard/flows").Flows;
 const HomeWizard = require("./homewizard/homewizard").HomeWizard;
 
-// "platforms": [
-//   {
-//     "platform": "HomeWizard-Lite",
-//     "name": "display-name",
-//     "room": "room-name",
-//     "username": "user@domain.tld",
-//     "password": "password",
-//     "hub": "test-hub-name"
-//   }
-// ]
+/*
+Configuration example
+
+"platforms": [
+    {
+        "platform": "HomeWizard-Lite",
+        "name": "display-name",
+        "room": "room-name",
+        "username": "user@domain.tld",
+        "password": "password",
+        "hub": "test-hub-name"
+    }
+]
+*/
 
 let Accessory, Service, Characteristic, UUIDGen;
 
