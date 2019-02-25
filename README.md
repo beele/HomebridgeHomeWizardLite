@@ -1,5 +1,7 @@
 #HOMEBRIDGE HOMEWIZARD LITE
 
+[![Build Status](https://travis-ci.com/beele/HomebridgeHomeWizardLite.svg?branch=master)](https://travis-ci.com/beele/HomebridgeHomeWizardLite)
+
 This Homebridge plugin allow the control of HomeWizard Lite switches (also known as flamingo switches).
 
 To install this plugin simple type `sudo npm install homebridge-homewizard-flamingo -g --unsafe-perm=true`.
