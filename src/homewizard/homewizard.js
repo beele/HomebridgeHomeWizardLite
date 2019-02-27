@@ -25,6 +25,7 @@ module.exports.HomeWizard = function (logger) {
             };
             return me
                 .backoff(3, () => {
+                    me.log('Trying to get an authenticated session...');
                     return request.get(opts);
                 })
                 .then((response) => {
@@ -107,6 +108,7 @@ module.exports.HomeWizard = function (logger) {
         };
         return me
             .backoff(3, () => {
+                me.log('Trying to set switch state...');
                 return request.post(opt);
             });
     };
