@@ -108,7 +108,7 @@ module.exports.HomeWizard = function (logger) {
         };
         return me
             .backoff(3, () => {
-                me.log('Trying to set switch state...');
+                me.log('Trying to set switch state for ' + switchId + '...');
                 return request.post(opt);
             });
     };

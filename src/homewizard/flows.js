@@ -54,10 +54,10 @@ module.exports.Flows = function (homeWizard, logger, username, password) {
             })
             .then((result) => {
                 if (result.status === 'Success') {
-                    me.log('Switch ' + switchId + ' switched state to ' + value ? 'On' : 'Off');
+                    me.log('Switch ' + switchId + ' switched state to ' + (value ? 'On' : 'Off'));
                     return Promise.resolve(value);
                 } else {
-                    me.log('Switch ' + switchId + ' could not be switched to state ' + value ? 'On' : 'Off');
+                    me.log('Switch ' + switchId + ' could not be switched to state ' + (value ? 'On' : 'Off'));
                     return Promise.reject('Switch ' + switchId + ' state could not be set!');
                 }
             })
