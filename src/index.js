@@ -36,7 +36,7 @@ function HomeWizardPlatform(log, config, api) {
     this.accessories = [];
 
     this.hub = config['hub'];
-    this.flows = new Flows(new HomeWizard(log), log, config['username'], config['password']);
+    this.flows = new Flows(new HomeWizard(1000, 5, log), log, config['username'], config['password']);
 
     if (api) {
         platform.api = api;

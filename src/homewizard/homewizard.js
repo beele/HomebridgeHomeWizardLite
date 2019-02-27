@@ -1,12 +1,14 @@
 const request = require('request-promise-native');
 const crypto = require('crypto');
 
-module.exports.HomeWizard = function (logger) {
+module.exports.HomeWizard = function (initialBackoffDelay, maxRetries, logger) {
     const me = this;
     me.log = logger;
+    me.initialBackoffDelay = initialBackoffDelay;
+    me.maxRetries = maxRetries;
 
     me.pause = (duration) => new Promise(res => setTimeout(res, duration));
-    me.backoff = (retries, fn, delay = 1000) =>
+    me.backoff = (retries, fn, delay = me.initialBackoffDelay) =>
         fn().catch(err => retries > 1
             ? me.pause(delay).then(() => me.backoff(retries - 1, fn, delay * 2))
             : Promise.reject(err));
@@ -24,7 +26,7 @@ module.exports.HomeWizard = function (logger) {
                 json: true
             };
             return me
-                .backoff(3, () => {
+                .backoff(me.maxRetries, () => {
                     me.log('Trying to get an authenticated session...');
                     return request.get(opts);
                 })
@@ -75,7 +77,7 @@ module.exports.HomeWizard = function (logger) {
         };
 
         return me
-            .backoff(3, () => {
+            .backoff(me.maxRetries, () => {
                 return request.get(opts);
             })
             .then((response) => {
@@ -107,7 +109,7 @@ module.exports.HomeWizard = function (logger) {
             json: true
         };
         return me
-            .backoff(3, () => {
+            .backoff(me.maxRetries, () => {
                 me.log('Trying to set switch state for ' + switchId + '...');
                 return request.post(opt);
             });

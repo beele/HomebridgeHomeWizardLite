@@ -11,7 +11,7 @@ beforeEach(() => {
 });
 
 test('HomeWizard-getBasicAuthHeader-username-password-not-null', done => {
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
 
     const authHeader = homeWizard.getBasicAuthHeader('valid@example.com', 'validPassword');
     expect(authHeader).not.toBeUndefined();
@@ -20,7 +20,7 @@ test('HomeWizard-getBasicAuthHeader-username-password-not-null', done => {
     done();
 });
 test('HomeWizard-getBasicAuthHeader-username-password-null', done => {
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
 
     const authHeader = homeWizard.getBasicAuthHeader('null', 'null');
     expect(authHeader).not.toBeUndefined();
@@ -31,7 +31,7 @@ test('HomeWizard-getBasicAuthHeader-username-password-null', done => {
 
 
 test('HomeWizard-isSessionStillValid-session-valid', done => {
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
 
     const session = {
         token: 'dummy-token',
@@ -50,7 +50,7 @@ test('HomeWizard-isSessionStillValid-session-valid', done => {
         });
 });
 test('HomeWizard-isSessionStillValid-session-invalid', done => {
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
 
     const session = {
         token: 'dummy-token',
@@ -69,7 +69,7 @@ test('HomeWizard-isSessionStillValid-session-invalid', done => {
         });
 });
 test('HomeWizard-isSessionStillValid-session-null', done => {
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
 
     homeWizard.isSessionStillValid(null)
         .then((session) => {
@@ -87,7 +87,7 @@ test('HomeWizard-isSessionStillValid-session-null', done => {
 test('HomeWizard-authentication-username-and-password-valid', done => {
     const requestMock = Mocks.mockAuthenticationGetRequest(0, false);
 
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
     homeWizard.authenticate('valid@example.com', 'validPassword')
         .then((session) => {
             console.log(session);
@@ -106,7 +106,7 @@ test('HomeWizard-authentication-username-and-password-valid', done => {
 test('HomeWizard-authentication-unreachable-first-time', done => {
     const requestMock = Mocks.mockAuthenticationGetRequest(1);
 
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
     homeWizard.authenticate('dummy-username', 'dummy-password')
         .then((session) => {
             console.log(session);
@@ -123,7 +123,7 @@ test('HomeWizard-authentication-unreachable-first-time', done => {
         });
 });
 test('HomeWizard-authentication-username-and-password-null', done => {
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
     homeWizard.authenticate(null, null)
         .then((session) => {
             fail('Authentication should not succeed when the username and password are null');
@@ -136,7 +136,7 @@ test('HomeWizard-authentication-username-and-password-null', done => {
 test('HomeWizard-authentication-unreachable', done => {
     const requestMock = Mocks.mockAuthenticationGetRequest();
 
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
     homeWizard.authenticate('dummy-username', 'dummy-password')
         .then((session) => {
             fail('Authentication should not succeed when the service is unreachable');
@@ -151,7 +151,7 @@ test('HomeWizard-authentication-unreachable', done => {
 test('HomeWizard-authentication-non-valid-credentials', done => {
     const requestMock = Mocks.mockAuthenticationGetRequest(0, true);
 
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
     homeWizard.authenticate('dummy-username', 'dummy-password')
         .then((session) => {
             fail('Authentication should not succeed when the username and password are bogus data');
@@ -172,7 +172,7 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches', done => {
         timestamp: Date.now()
     };
 
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
     homeWizard.getHubAndSwitchIdsByHubName(session, 'dummy-name')
         .then((switches) => {
             expect(switches).not.toBeNull();
@@ -192,7 +192,7 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-hub-with-5-switches-unreachable-fir
         timestamp: Date.now()
     };
 
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
     homeWizard.getHubAndSwitchIdsByHubName(session, 'dummy-name')
         .then((switches) => {
             expect(switches).not.toBeNull();
@@ -212,7 +212,7 @@ test('HomeWizard-getHubAndSwitchIdsByHubName-unreachable', done => {
         timestamp: Date.now()
     };
 
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
     homeWizard.getHubAndSwitchIdsByHubName(session, 'dummy-name')
         .then((switches) => {
             fail('getHubAndSwitchIdsByHubName should not return data when the service is unreachable');
@@ -233,7 +233,7 @@ test('HomeWizard-setSwitchState-switch-found-successful', done => {
         timestamp: Date.now()
     };
 
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
     homeWizard.setSwitchState(session, 'dummy-switchId', 'dummy-hubId', true)
         .then((result) => {
             expect(result).not.toBeNull();
@@ -253,7 +253,7 @@ test('HomeWizard-setSwitchState-switch-found-successful-unreachable-first-time',
         timestamp: Date.now()
     };
 
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
     homeWizard.setSwitchState(session, 'dummy-switchId', 'dummy-hubId', true)
         .then((result) => {
             expect(result).not.toBeNull();
@@ -273,7 +273,7 @@ test('HomeWizard-setSwitchState-unreachable-or-switch-not-found', done => {
         timestamp: Date.now()
     };
 
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
     homeWizard.setSwitchState(session, 'dummt-switchId', 'dummy-hubId', true)
         .then((result) => {
             fail('setSwitchState should not return data when the service is unreachable');
@@ -292,7 +292,7 @@ test('HomeWizard-setSwitchState-switch-found-not-successful', done => {
         timestamp: Date.now()
     };
 
-    const homeWizard = new HomeWizard((message) => console.log(message));
+    const homeWizard = new HomeWizard(1000, 3, (message) => console.log(message));
     homeWizard.setSwitchState(session, 'dummy-switchId', 'dummy-hubId', true)
         .then((result) => {
             expect(result).not.toBeNull();

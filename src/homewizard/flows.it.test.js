@@ -15,7 +15,7 @@ test('Flows-authenticationFlow-not-preauthenticated', done => {
     const requestMock = Mocks.mockAuthenticationGetRequest(1);
 
     const logger = (message) => console.log(message);
-    const homeWizard = new HomeWizard(logger);
+    const homeWizard = new HomeWizard(1000, 3, logger);
     const flows = new Flows(homeWizard, logger, 'dummy-username', 'dummy-password');
 
     flows.authenticationFlow()
@@ -30,7 +30,7 @@ test('Flows-authenticationFlow-not-preauthenticated', done => {
 });
 test('Flows-authenticationFlow-preauthenticated', done => {
     const logger = (message) => console.log(message);
-    const homeWizard = new HomeWizard(logger);
+    const homeWizard = new HomeWizard(1000, 3, logger);
     const flows = new Flows(homeWizard, logger, 'dummy-username', 'dummy-password');
 
     flows.session = {
@@ -50,7 +50,7 @@ test('Flows-authenticationFlow-authenticate-unreachable', done => {
     const requestMock = Mocks.mockAuthenticationGetRequest();
 
     const logger = (message) => console.log(message);
-    const homeWizard = new HomeWizard(logger);
+    const homeWizard = new HomeWizard(1000, 3, logger);
     const flows = new Flows(homeWizard, logger, 'dummy-username', 'dummy-password');
 
     flows.authenticationFlow()
@@ -72,7 +72,7 @@ test('Flows-processSwitchesFlow-not-preauthenticated', done => {
     const requestMock = Mocks.mockAuthenticationAndPlugsGetRequests(1, false);
 
     const logger = (message) => console.log(message);
-    const homeWizard = new HomeWizard(logger);
+    const homeWizard = new HomeWizard(1000, 3, logger);
     const flows = new Flows(homeWizard, logger, 'dummy-username', 'dummy-password');
 
     flows.processSwitchesFlow('dummy-name')
@@ -92,7 +92,7 @@ test('Flows-processSwitchesFlow-preauthenticated', done => {
     const requestMock = Mocks.mockPlugsGetRequest(1);
 
     const logger = (message) => console.log(message);
-    const homeWizard = new HomeWizard(logger);
+    const homeWizard = new HomeWizard(1000, 3, logger);
     const flows = new Flows(homeWizard, logger, 'dummy-username', 'dummy-password');
 
     flows.session = {
@@ -115,7 +115,7 @@ test('Flows-processSwitchesFlow-authenticate-unreachable', done => {
     const requestMock = Mocks.mockAuthenticationAndPlugsGetRequests(1, false, 1);
 
     const logger = (message) => console.log(message);
-    const homeWizard = new HomeWizard(logger);
+    const homeWizard = new HomeWizard(1000, 3, logger);
     const flows = new Flows(homeWizard, logger, 'dummy-username', 'dummy-password');
 
     flows.processSwitchesFlow('dummy-name')
@@ -135,7 +135,7 @@ test('Flows-processSwitchesFlow-getHubAndSwitchIdsByHubName-unreachable', done =
     const requestMock = Mocks.mockAuthenticationAndPlugsGetRequests(1, false, 2);
 
     const logger = (message) => console.log(message);
-    const homeWizard = new HomeWizard(logger);
+    const homeWizard = new HomeWizard(1000, 3, logger);
     const flows = new Flows(homeWizard, logger, 'dummy-username', 'dummy-password');
 
     flows.processSwitchesFlow('dummy-name')
@@ -158,7 +158,7 @@ test('Flows-setSwitchStateFlow-not-preauthenticated', done => {
     const switchStateMock = Mocks.mockSwitchStatePostRequest(1);
 
     const logger = (message) => console.log(message);
-    const homeWizard = new HomeWizard(logger);
+    const homeWizard = new HomeWizard(1000, 3, logger);
     const flows = new Flows(homeWizard, logger, 'dummy-username', 'dummy-password');
 
     flows.setSwitchStateFlow('test-switch-id1', 'test-hub-id', true)
@@ -180,7 +180,7 @@ test('Flows-setSwitchStateFlow-preauthenticated', done => {
     const requestMock = Mocks.mockSwitchStatePostRequest(1);
 
     const logger = (message) => console.log(message);
-    const homeWizard = new HomeWizard(logger);
+    const homeWizard = new HomeWizard(1000, 3, logger);
     const flows = new Flows(homeWizard, logger, 'dummy-username', 'dummy-password');
 
     flows.session = {
@@ -207,7 +207,7 @@ test('Flows-setSwitchStateFlow-unsuccessful-state', done => {
     const switchStateMock = Mocks.mockSwitchStatePostRequest(1, true);
 
     const logger = (message) => console.log(message);
-    const homeWizard = new HomeWizard(logger);
+    const homeWizard = new HomeWizard(1000, 3, logger);
     const flows = new Flows(homeWizard, logger, 'dummy-username', 'dummy-password');
 
     flows.setSwitchStateFlow('test-switch-id1', 'test-hub-id', true)
@@ -229,7 +229,7 @@ test('Flows-setSwitchStateFlow-authenticate-unreachable', done => {
     const switchStateMock = Mocks.mockSwitchStatePostRequest(1);
 
     const logger = (message) => console.log(message);
-    const homeWizard = new HomeWizard(logger);
+    const homeWizard = new HomeWizard(1000, 3, logger);
     const flows = new Flows(homeWizard, logger, 'dummy-username', 'dummy-password');
 
     flows.setSwitchStateFlow('test-switch-id1', 'test-hub-id', true)
@@ -251,7 +251,7 @@ test('Flows-setSwitchStateFlow-setSwitchState-unreachable', done => {
     const switchStateMock = Mocks.mockSwitchStatePostRequest();
 
     const logger = (message) => console.log(message);
-    const homeWizard = new HomeWizard(logger);
+    const homeWizard = new HomeWizard(1000, 3, logger);
     const flows = new Flows(homeWizard, logger, 'dummy-username', 'dummy-password');
 
     flows.setSwitchStateFlow('test-switch-id1', 'test-hub-id', true)
