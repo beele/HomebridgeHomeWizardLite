@@ -11,7 +11,9 @@ Configuration example
         "room": "room-name",
         "username": "user@domain.tld",
         "password": "password",
-        "hub": "test-hub-name"
+        "hub": "test-hub-name",
+        "delay": "delay-in-milliseconds",
+        "retries": "number-of-retries"
     }
 ]
 */
@@ -36,7 +38,16 @@ function HomeWizardPlatform(log, config, api) {
     this.accessories = [];
 
     this.hub = config['hub'];
-    this.flows = new Flows(new HomeWizard(1000, 5, log), log, config['username'], config['password']);
+    this.flows = new Flows(
+        new HomeWizard(
+            config['delay'],
+            config['retries'],
+            log
+        ),
+        log,
+        config['username'],
+        config['password']
+    );
 
     if (api) {
         platform.api = api;

@@ -14,20 +14,24 @@ Next open the config.json that contains your Homebridge configuration and add a 
     "room": "room-name",
     "username": "user@domain.tld",
     "password": "password",
-    "hub": "test-hub-name"
+    "hub": "test-hub-name",
+    "delay": "delay-in-milliseconds",
+    "retries": "number-of-retries"
 }
 ```
 
-The platform name has to be `HomeWizard-Lite` to link to the plugin.
-The `name` and `room` fields are for the display name and room name inside of the HomeKit app.
-The `username` and `password` fields are your HomeWizard login credentials.
-The `hub` field is the name given in the HomeWizard app to the hub.
+The platform name has to be `HomeWizard-Lite` to link to the plugin.<br/>
+The `name` and `room` fields are for the display name and room name inside of the HomeKit app.<br/>
+The `username` and `password` fields are your HomeWizard login credentials.<br/>
+The `hub` field is the name given in the HomeWizard app to the hub.<br/>
+The `delay` and `retries` fields specify the initial delay between the calls and the amount of retries to the HomeWizard API should any of the calls fail.<br/>
+Each subsequent call will double the previous delay up to the maximum amount of retries specified. A 1000 milliseconds and 5 retries are a good default.
 
-All the switches under the hub are automatically enumerated and added as accessories.
+All the switches under the hub are automatically enumerated and added as accessories.<br/>
 Each switch will be available as a separate accessory in the Home app.
 
 Because these switches do not report their current on/off state it is important that they are in the off state when you start to use them with the HomeKit app.
-All on/off state is kept in the Homebridge plugin.
+All on/off state is kept in the Homebridge plugin.<br/>
 Adding or removing switches after the initial setup is currently not supported! 
 
 Tested with:
