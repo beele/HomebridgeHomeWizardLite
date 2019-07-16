@@ -11,7 +11,7 @@ Configuration example
         "room": "room-name",
         "username": "user@domain.tld",
         "password": "password",
-        "hub": "test-hub-name",
+        "hubs": ["test-hub-name-1", "test-hub-name-2"],
         "delay": "delay-in-milliseconds",
         "retries": "number-of-retries"
     }
@@ -37,7 +37,7 @@ function HomeWizardPlatform(log, config, api) {
     this.log = log;
     this.accessories = [];
 
-    this.hub = config['hub'];
+    this.hubs = config['hubs'];
     this.flows = new Flows(
         new HomeWizard(
             config['delay'],
@@ -55,17 +55,46 @@ function HomeWizardPlatform(log, config, api) {
         platform.api.on('didFinishLaunching', function () {
             platform.log('Platform API loaded!');
 
+            const switchesPerHub = [];
+            for (const hub of platform.hubs) {
+                switchesPerHub.push(platform.flows.processSwitchesFlow(hub));
+            }
+
             if (platform.accessories.length > 0) {
                 platform.log('Accessories restored from cache!');
-                platform.flows.authenticationFlow()
-                    .then((session) => {
-                        platform.log('Authenticated, session stored!')
-                    })
+
+                Promise
+                    .all(switchesPerHub)
+                    .then((arrayWithSwitchesPerHub) => {
+                        const allSwitches = Array.prototype.concat.apply([], arrayWithSwitchesPerHub);
+
+                        const toAdd = allSwitches.filter(function (sw) {
+                            return !platform.accessories.some(function (accessory) {
+                                return sw.id === accessory.context.id && sw.hubId === accessory.context.hubId;
+                            });
+                        });
+                        const toRemove = platform.accessories.filter(function (accessory) {
+                            return !allSwitches.some(function (sw) {
+                                return accessory.context.id === sw.id && accessory.context.hubId === sw.hubId;
+                            });
+                        });
+                        toRemove.forEach((accessory) => {
+                            platform.removeAccessory(accessory);
+                        });
+                        toAdd.forEach((sw) => {
+                            platform.addAccessory(sw);
+                        });
+
+                        platform.log('Done!');
+                    });
             } else {
                 platform.log('No Accessories in cache, creating...');
-                platform.flows.processSwitchesFlow(platform.hub)
-                    .then((switches) => {
-                        for (const sw of switches) {
+
+                Promise
+                    .all(switchesPerHub)
+                    .then((arrayWithSwitchesPerHub) => {
+                        const allSwitches = Array.prototype.concat.apply([], arrayWithSwitchesPerHub);
+                        for (const sw of allSwitches) {
                             platform.addAccessory(sw);
                         }
                     })
@@ -125,21 +154,13 @@ HomeWizardPlatform.prototype = {
         });
     },
 
-    //TODO: When restoring from cache, check available vs cached switches, delete ones that are no longer available and create new ones!
-    removeAccessory: function (name) {
+    removeAccessory: function (accessory) {
         const platform = this;
-        platform.log('Delete requested for: ' + name);
+        platform.log('Deleting for accessory: ' + accessory.displayName);
 
-        let switchToRemove;
-        platform.accessories.forEach(value => {
-            if (value.displayName === name) {
-                switchToRemove = value;
-            }
-        });
-
-        if (switchToRemove) {
-            platform.api.unregisterPlatformAccessories('homebridge-homewizard-lite', 'HomeWizard-Lite', [switchToRemove]);
-            platform.accessories.splice(platform.accessories.indexOf(switchToRemove), 1);
+        if (accessory) {
+            platform.api.unregisterPlatformAccessories('homebridge-homewizard-lite', 'HomeWizard-Lite', [accessory]);
+            platform.accessories.splice(platform.accessories.indexOf(accessory), 1);
         }
     }
 };

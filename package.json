@@ -1,14 +1,14 @@
 {
   "name": "homebridge-homewizard-flamingo",
-  "version": "4.0.5",
-  "description": "HomeWizard lite (flamingo) manual control for domotics integrations with HomeBridge",
+  "version": "5.0.0",
+  "description": "HomeWizard lite (flamingo/smartwares) manual control for domotics integrations with HomeBridge",
   "main": "src/index.js",
   "dependencies": {
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.5"
+    "request-promise-native": "^1.0.7"
   },
   "devDependencies": {
-    "jest": "^24.1.0"
+    "jest": "^24.8.0"
   },
   "scripts": {
     "test": "jest"

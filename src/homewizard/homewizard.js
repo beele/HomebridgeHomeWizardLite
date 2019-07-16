@@ -87,7 +87,7 @@ module.exports.HomeWizard = function (initialBackoffDelay, maxRetries, logger) {
 
                         hub.devices.forEach((device) => {
                             me.log('Found ' + device.name + ', id:' + device.id);
-                            switches.push({name: device.name, id: device.id, hubId: hub.id});
+                            switches.push({name: device.name, id: device.id, hubId: hub.id, hubName: hub.name});
                         });
                         return true;
                     }

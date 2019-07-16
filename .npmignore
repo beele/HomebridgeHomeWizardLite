@@ -2,3 +2,4 @@ src/experimental
 .idea
 .travis.yml
 *.iml
+src/test.js
