@@ -110,7 +110,7 @@ HomeWizardPlatform.prototype = {
     addAccessory: function (sw) {
         const platform = this;
 
-        const uuid = UUIDGen.generate(sw.name);
+        const uuid = UUIDGen.generate(sw.id);
         const newAccessory = new Accessory(sw.name, uuid);
 
         newAccessory.context = {id: sw.id, hubId: sw.hubId, isOn: 0};
