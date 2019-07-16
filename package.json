@@ -1,6 +1,6 @@
 {
   "name": "homebridge-homewizard-flamingo",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "HomeWizard lite (flamingo/smartwares) manual control for domotics integrations with HomeBridge",
   "main": "src/index.js",
   "dependencies": {
